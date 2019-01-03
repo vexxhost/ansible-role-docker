@@ -1,0 +1,18 @@
+---
+- name: Gather variables for each operating system
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- name: Install packages (Debian)
+  package:
+    name: "{{ docker_packages }}"
+    state: present
+  register: _install_package
+  until: _install_package is succeeded
+
+- name: Enable & start service
+  service:
+    name: docker
+    state: started
+    enabled: true
